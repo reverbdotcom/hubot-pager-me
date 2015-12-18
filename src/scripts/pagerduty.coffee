@@ -7,6 +7,7 @@
 #   hubot Am I on call - return if I'm currently on call or not
 #   hubot who's on call - return a list of services and who is on call for them
 #   hubot who's on call for <schedule> - return the username of who's on call for any schedule matching <search>
+#   hubot devhelp <msg> - @ the current person on Triage
 #   hubot pager trigger <user> <msg> - create a new incident with <msg> and assign it to <user>
 #   hubot pager trigger <schedule> <msg> - create a new incident with <msg> and assign it the user currently on call for <schedule>
 #   hubot pager incidents - return the current incidents
@@ -76,7 +77,7 @@ module.exports = (robot) ->
 
   robot.respond /(pager|major)( me)? incident (.*)$/i, (msg) ->
     msg.finish()
-    
+
     if pagerduty.missingEnvironmentForApi(msg)
       return
 
@@ -562,6 +563,17 @@ module.exports = (robot) ->
               msg.send results.join("\n")
           else
             msg.send 'No schedules found!'
+
+  # REVERB addition of devhelp
+  robot.respond /devhelp (.*)/i, (msg) ->
+    req = msg.match[1]
+    withScheduleMatching msg, 'Triage', (s) ->
+      withCurrentOncallId msg, s, (oncallUserid, oncallUsername, schedule) ->
+        hipchatUser = robot.brain.userForName(oncallUsername)
+        if hipchatUser
+          msg.send "@#{hipchatUser.mention_name} #{req}"
+        else
+          msg.send "I don't know who #{oncallUsername} is, but they might be around here."
 
   # who is on call?
   robot.respond /who(?:’s|'s|s| is|se)? (?:on call|oncall|on-call)(?: (?:for )?(.*?)(?:\?|$))?/i, (msg) ->

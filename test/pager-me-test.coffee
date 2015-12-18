@@ -74,3 +74,6 @@ describe 'pagerduty', ->
 
   it 'registers a pager maintenance listener', ->
     expect(@robot.respond).to.have.been.calledWith(/(pager|major)( me)? maintenance (\d+) (.+)$/i)
+
+  it 'registers a devhelp listener', ->
+    expect(@robot.respond).to.have.been.calledWith(/devhelp (.*)/i)
