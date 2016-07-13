@@ -567,7 +567,7 @@ module.exports = (robot) ->
   # REVERB addition of devhelp
   robot.respond /devhelp (.*)/i, (msg) ->
     req = msg.match[1]
-    withScheduleMatching msg, 'Triage', (s) ->
+    withScheduleMatching msg, 'devhelp', (s) ->
       withCurrentOncallId msg, s, (oncallUserid, oncallUsername, schedule) ->
         hipchatUser = robot.brain.userForName(oncallUsername)
         if hipchatUser
